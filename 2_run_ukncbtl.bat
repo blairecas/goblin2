@@ -1,0 +1,1 @@
+start ..\..\ukncbtl\ukncbtl /autostart /disk0:..\goblin2\release\gobli2.dsk /boot1
