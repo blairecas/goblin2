@@ -170,6 +170,8 @@ PpuMai:	mov	#PpuComm/2, (R4)
 	jmp	PpuSnd				; 2 C_PPU_SND
 	jmp	PpuVsc				; 3 C_PPU_VSCR
 	jmp	PpuVrs				; 4 C_PPU_VRST
+	jmp	PpuVbl				; 5 C_PPU_VBLACK
+	jmp	PpuVno				; 6 C_PPU_VNORM
 
 ; restore, return
 PpuExi:	mtps	#200
@@ -271,6 +273,20 @@ PpuVrs:	mov	PpuScrollAddr, R0
 	mov	R0, -(R0)
 	jmp	PpuOk
 
+
+; make screen black (by setting all lines to first)
+PpuVbl:	mov	PpuScrollAddr, R0
+	tst	(R0)+
+	mov	R0, 2(R0)
+	jmp	PpuOk
+
+
+; restore vlines order
+PpuVno:	mov	PpuScrollAddr, R0
+	add	#6, R0
+	mov	R0, -(R0)
+	jmp	PpuOk
+	
 
 ; pp timer ready wait
 PpuTimerInit:

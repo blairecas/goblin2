@@ -3,17 +3,19 @@ C_SCRWID	= 80.
 C_VADDR		= 20.*C_SCRWID+100000
 C_VDIFF		= 8.
 C_MENU_Y	= 100.
-C_MENU_X	= 24.
+C_MENU_X	= 26.
 
 ; PPU ports
 C_PORT_AY1	= 177360
 C_PORT_AY2	= 177362
 
 ; commands to PPU
-C_PPU_AY	= 1
-C_PPU_SND	= 2
-C_PPU_VSCR	= 3
-C_PPU_VRST	= 4
+C_PPU_AY	= 1				; output AY regs
+C_PPU_SND	= 2				; sound 
+C_PPU_VSCR	= 3				; scroll screen by 1 line down
+C_PPU_VRST	= 4				; reset lines scrolling to initial
+C_PPU_VBLACK	= 5				; set all lines as first (usually black)
+C_PPU_VNORM	= 6				; restore normal lines order
 
 ; keys scancodes
 C_KEY_RIGHT	= 133

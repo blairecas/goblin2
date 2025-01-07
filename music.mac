@@ -122,7 +122,6 @@ TS_ID_CHECK:
 ; R1 = 0 - repeat, 1 - no repeat
 Pt3Init:
 	asl	R0
-	asl	R0
 	mov	MusicTable(R0), PT3FILE_MODULE1_ADDR
 	mov	MusicTable+2(R0), PT3FILE_END_ADDR
 	mov	R1, NO_REPEAT_MODE
@@ -1074,40 +1073,27 @@ NT_DATA:	.byte   PARAM_TAB_WORK_NEW_0 - PARAM_TAB_WORK, 0, TAB_C_NEW_0 - PT3_TAB
 		.even
 
 ; Two AY devices params data
-PARAM_DEVICES_AY1:
-	.word	1, 1, AY_1_PORT
-PARAMETERS_AY1:
-	.blkb	PARAM_SIZE
-	.even
-PARAM_DEVICES_AY2:
-	.word	2, 2, AY_2_PORT
-PARAMETERS_AY2:
-	.blkb	PARAM_SIZE
-	.even 
+PARAM_DEVICES_AY1:	.word	1, 1, AY_1_PORT
+PARAMETERS_AY1:		.blkb	PARAM_SIZE
+			.even
+PARAM_DEVICES_AY2:	.word	2, 2, AY_2_PORT
+PARAMETERS_AY2:		.blkb	PARAM_SIZE
+			.even 
 
-Pt3DataOut:
-	.blkw	8.
+; PPU will use this
+Pt3DataOut:	.blkw	8.
 
-MusicTable:
-	.word	M_Music1, M_Music1End
-	.word	M_Music2, M_Music2End
-	.word	M_Music3, M_Music3End
-	.word	M_Music4, M_Music4End
+; .pt3 files data
+MusicTable:	.word	M_Music1, M_Music2, M_Music3, M_Music4, M_MusicEnd
 
 M_Music1:
 	@includebin ./music/mafia.pt3
-M_Music1End:
-
 M_Music2:
 	@includebin ./music/other.pt3
-M_Music2End:
-
 M_Music3:
 	@includebin ./music/avisio.pt3
-M_Music3End:
-
 M_Music4:
 	@includebin ./music/reddie2.pt3
-M_Music4End:
+M_MusicEnd:
  
 	.even 
