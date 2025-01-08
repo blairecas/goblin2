@@ -61,6 +61,9 @@ PpuComm:	.word	177777			; command to PPU
 
 PpuStart:
 	mtps	#200
+	; stop FD (? do we need that ?)
+	clr	R0
+	call	@7132(R0)			
 	; backup and clean low addrs except 272
 	mov	PC, R0
 	add	#PpuBkp-., R0
@@ -81,9 +84,10 @@ PpuSetVlines:
 	add	#PpuLines+7-., R0
 	bic	#7, R0				; R0 - line table start addr
 	mov	R0, -(SP)			; save it
+	mov	R0, PpuPalAddr
 	bis	#6, (SP)			; +6 means first line descriptor have color
-	mov	#^B1001100110001000, (R0)+ 	; YRGB YRGB YRGB YRGB for colors 1st part
-	mov	#^B1010101011001100, (R0)+	; YRGB YRGB YRGB YRGB for colors 2nd part
+	clr	(R0)+ 				; YRGB YRGB YRGB YRGB for colors 1st part
+	clr	(R0)+				; YRGB YRGB YRGB YRGB for colors 2nd part
 	clr	(R0)+				; vaddr not used for first 18 lines
 	mov	R0, (R0)
 	add	#2, (R0)
@@ -274,23 +278,23 @@ PpuVrs:	mov	PpuScrollAddr, R0
 	jmp	PpuOk
 
 
-; make screen black (by setting all lines to first)
-PpuVbl:	mov	PpuScrollAddr, R0
-	tst	(R0)+
-	mov	R0, 2(R0)
+; make screen black
+PpuVbl:	mov	PpuPalAddr, R0
+	clr	(R0)+
+	clr	(R0)+
 	jmp	PpuOk
 
 
-; restore vlines order
-PpuVno:	mov	PpuScrollAddr, R0
-	add	#6, R0
-	mov	R0, -(R0)
+; restore screen colors
+PpuVno:	mov	PpuPalAddr, R0
+	mov	PpuPal1, (R0)+
+	mov	PpuPal2, (R0)+
 	jmp	PpuOk
 	
 
-; pp timer ready wait
+; timer init (stop, clear counter)
 PpuTimerInit:
-	clr	@#177710			; clear state, also stop timer
+	clr	@#177710			; clear control, stop
 	clr	@#177712			; clear buffer
 	tst	@#177714			; read current value
 	bne	.-4				; wait until cleared
@@ -321,6 +325,7 @@ PpuVsyInt:
 	; start timer
 	mov	#2220., @#177712		; set buffer reg (2500x8mks = 20000mks = 1/50s)
 	tst	@#177714			; load counter reg
+	tst	@#177714			; +1 for bugged hardware
 	mov	#^B01000101, @#177710		; start, 8mks, allow int on zero (0I000FFS, FF - 00-2mks, 01-4mks, 10-8mks, 11-16mks)
 	rti
 
@@ -337,6 +342,9 @@ PpuTimInt:
 
 
 ; data
+PpuPalAddr:	.word	0
+PpuPal1:	.word	^B1001100110001000
+PpuPal2:	.word	^B1010101011001100
 PpuScrollAddr:	.word	0
 PpuScrollCur:	.word	0
 PpuScrollMax:	.word	0

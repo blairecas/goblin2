@@ -50,9 +50,10 @@ MainInit:
 	call	MenuMusicInit
 	call	StopSound
 	call	FadeScreen
+	call	WaitVsync
 	; reset screen scroll (if any)
-	.ppu	#C_PPU_VRST
 	.ppu	#C_PPU_VBLACK
+	.ppu	#C_PPU_VRST
 	; title picture
 	mov	#Menu1Data, R0
 	mov	#50.*C_SCRWID*2, R1
@@ -284,8 +285,9 @@ MainWin:
 	mov	#100012, WinCurVaddr
 	mov	#50., WinCurDelay
 	clr	12$+2
-	; prepare text
+	; prepare text/stars
 	call	WinTxtInit
+	call	WinStarInit
 	;
 10$:	; scroll proc
 	call	WaitVSync
@@ -316,6 +318,7 @@ MainWin:
 	;
 30$:	; text proc
 	call	WinTxtProc
+	call	WinStarProc
 90$:	; music/key loop
 	call	MusicPlay
 	call	KeyWCheck
@@ -393,6 +396,67 @@ WinTxtProc:
 	add	#C_SCRWID*14.+10., R5
 	mov	#WinTxt, R0
 	call	PrintStr
+99$:	return
+
+
+WinStarTile:	.byte	42., 43., 44., 43., 42., 0
+WinStarBuf:	.word	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+WinStarInit:
+	mov	#WinStarBuf, R5
+	clr	R4
+	mov	#6, R3
+10$:	call	WinStarRand				; R0 - 1..255
+	mov	R0, (R5)+				; XYaddr
+	mov	R4, (R5)+				; Tile idx
+	inc	R4
+	sob	R3, 10$
+	return 
+WinStarRand:
+	call	Random8bit
+	mov	R0, R1
+	bic	#^B1111111111110000, R1			; R4 - X
+	cmp	R1, #4.
+	blos	10$
+	cmp	R1, #15.-5.
+	bhis	10$
+	br	WinStarRand
+10$:	mov	R0, R1
+	ash	#-4, R1
+	cmp	R1, #1.
+	blos	WinStarRand
+	return
+WinStarProc:
+	add	#20000, #100000
+	bcc	99$
+	mov	#WinStarBuf, R4
+	mov	#6, R3
+10$:	mov	(R4), R5
+	bic	#^B1111111111110000, R5
+	mul	#5., R5
+	inc	R5
+	mov	(R4)+, R1
+	bic	#^B1111111100001111, R1
+	ash	#-4, R1
+	mul	#18.*C_SCRWID, R1
+	add	R1, R5
+	add	WinCurVaddr, R5
+	sub	#10., R5
+	mov	(R4), R0
+	movb	WinStarTile(R0), R0
+	mov	R4, -(SP)
+	mov	R3, -(SP)
+	call	DrawTile
+	mov	(SP)+, R3
+	mov	(SP)+, R4
+	; increase idx
+	inc	(R4)
+	cmp	(R4), #6
+	bne	20$
+	clr	(R4)
+	call	WinStarRand
+	mov	R0, -2(R4)
+20$:	tst	(R4)+
+	sob	R3, 10$
 99$:	return
 
 

@@ -3,7 +3,7 @@ TilesAddr:
 	.word	TilesData10, TilesData11, TilesData12, TilesData13, TilesData14, TilesData15, TilesData16, TilesData17, TilesData18, TilesData19
 	.word	TilesData20, TilesData21, TilesData22, TilesData23, TilesData24, TilesData25, TilesData26, TilesData27, TilesData28, TilesData29
 	.word	TilesData30, TilesData31, TilesData32, TilesData33, TilesData34, TilesData35, TilesData36, TilesData37, TilesData38, TilesData39
-	.word	TilesData40, TilesData41
+	.word	TilesData40, TilesData41, TilesData42, TilesData43, TilesData44
 
 TilesData0:
 	.word	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -172,6 +172,18 @@ TilesData40:
 TilesData41:
 	.word	377, 77, 0, 377, 377, 0, 377, 377, 0, 377, 377, 3, 377, 377, 3, 377
 	.word	377, 17, 377, 377, 17, 374, 377, 77, 0, 374, 77, 0, 0, 374, 0, 0
+	.word	0, 0, 0, 0
+TilesData42:
+	.word	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0
+	.word	6077, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	.word	0, 0, 0, 0
+TilesData43:
+	.word	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 6077, 0, 300
+	.word	37763, 0, 0, 6077, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	.word	0, 0, 0, 0
+TilesData44:
+	.word	0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 6314, 0, 0, 6063, 0, 140300
+	.word	177700, 0, 0, 6063, 0, 300, 6314, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	.word	0, 0, 0, 0
 
 
