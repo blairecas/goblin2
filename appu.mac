@@ -63,7 +63,7 @@ PpuStart:
 	mtps	#200
 	; stop FD (? do we need that ?)
 	clr	R0
-	call	@7132(R0)			
+	call	@7132(R0)
 	; backup and clean low addrs except 272
 	mov	PC, R0
 	add	#PpuBkp-., R0
@@ -142,7 +142,23 @@ PpuSetOther:
 	mov	PC, R0
 	add	#PpuVsyInt-., R0
 	mov	R0, @#100
-	mov	#200, @#102
+	; try to check for VM2 bug and change vsync then
+	; why? emulators are not working well with screen refresh timings
+	; so sprites will blink or not visible - we 'fix' that for emulators
+	clr	R1
+	mov	#12, R2
+10$:	mov	(PC), R0
+	inc	R1
+	br	.+2
+	br	.+2
+	br	.+2
+	sob	R2, 10$
+	cmp	R1, #12
+	bne	20$				; real VM2 processor
+	mov	PC, R0
+	add	#PpuTimInt-., R0
+	mov	R0, @#100
+20$:	mov	#200, @#102
 	; check AY presence
 	mov	PC, R0
 	add	#PpuInt4-., R0
@@ -195,7 +211,7 @@ PpuExi:	mtps	#200
 	return
 
 
-; out AY regs
+; out AY regs to ASM (Aberrant's Sound Module)
 PpuAY:	mov	#Pt3DataOut/2, (R4)
 	mov	(R5), R2			; R2 AY port #
 	mov	#13., R1			; start from reg #13

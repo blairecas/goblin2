@@ -1,0 +1,91 @@
+	.title	GOBLI2
+	.mcall	.setto .print .exit
+	.list	MEB
+	.enabl	LC
+	
+C_MAX_RAM =: 120000
+
+	.asect
+	.=1000
+
+Start:	mtps	#200				; stop right there, you interrupts
+	mov	#1000, SP			; just in case
+	; check RT11 presence
+	tst	@#54
+	beq	90$
+	.setto	#C_MAX_RAM-2
+	cmp	R0, #C_MAX_RAM-2
+	beq	90$
+	.print	#MsgNoMem
+	.exit
+90$:	; relocate CPU unpacker and code
+	mov	#CpuData, R0
+	mov	#C_MAX_RAM-UnpackEnd+CpuData, R1
+	mov	#UnpackEnd-CpuData/2, R3
+	mov	(R0)+, (R1)+
+	sob	R3, .-2
+	; unpack and run CPU
+	jmp	@#C_MAX_RAM-UnpackEnd+UnpackRun	
+
+MsgNoMem:	.asciz	"(!) unable to .settop #117776 (no memory?)"
+		.even
+
+; //////////////////////////////////////////////////////////////////////////////
+; // CPU packed data and unpacker
+; //////////////////////////////////////////////////////////////////////////////
+
+CpuData:
+	@includebin _acpu_lz.bin
+	.even
+CpuDataEnd:
+
+; unpack and run CPU
+UnpackRun:
+	mov	#C_MAX_RAM-UnpackEnd+CpuData, R0
+	mov	SP, R1
+	call	@#C_MAX_RAM-UnpackEnd+Unpack
+	jmp	(SP)
+
+Unpack:	clr	R2
+	movb	#200, R3
+	sxt	R5
+10$:	call	50$
+	movb	(R0)+, (R1)+
+	sob	R2, .-2
+	aslb	R3
+	bcs	30$
+	call	50$
+20$:	mov	R1, R4
+	add	R5, R4
+	movb	(R4)+, (R1)+
+	sob	R2, .-2
+	aslb	R3
+	bcc	10$
+30$:	mov	#-2, R2
+	call	60$
+	incb	R2
+	bne	.+4
+40$:	return
+	swab	R2
+	mov	R2, R5
+	clrb	R5
+	bisb	(R0)+, R5
+	asr	R5
+	mov	#1, R2
+	bcs	.+6
+	call	80$
+	inc	R2
+	br	20$
+50$:	incb	R2
+60$:	aslb	R3
+	bne	70$
+	movb	(R0)+, R3
+	rolb	R3
+70$:	bcs	40$
+80$:	aslb	R3
+	rol	R2
+	br	60$
+UnpackEnd:
+
+
+	.end	Start

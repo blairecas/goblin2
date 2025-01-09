@@ -2,6 +2,8 @@
 	.enabl	LC
 	.list	MEB
 
+C_MAX_RAM =: 120000
+
 .macro	.ppu	X
 	mov	X, PpuComm
 	tst	PpuComm
@@ -2387,5 +2389,8 @@ LevL:
 
 Level2Vaddr = PpuStart
 
+	.if LT C_MAX_RAM-.
+	.error maximum ram exceeded
+	.endc
 End:
 	.end	Start
