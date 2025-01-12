@@ -158,6 +158,8 @@ PpuSetOther:
 	mov	PC, R0
 	add	#PpuTimInt-., R0
 	mov	R0, @#100
+	mov	#Emulated/2, @#177010
+	inc	@#177014
 20$:	mov	#200, @#102
 	; check AY presence
 	mov	PC, R0

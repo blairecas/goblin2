@@ -18,6 +18,10 @@ C_MAX_RAM =: 120000
 Start:	call	RunPpu
 	call	SetupLVaddr				; level addrs -> vaddr table
 	clrb	bGameMode
+	; emulated?
+	tst	Emulated
+	beq	Main
+	movb	#2, MsgPreSpace				; green 'press' on emulators
 
 ; main cycle
 Main:	movb	bGameMode, R0
@@ -1906,6 +1910,7 @@ UnpR12:	clr	R2
 ; // Data
 ; //////////////////////////////////////////////////////////////////////////////
 
+Emulated:	.word	0
 VsyCnt:		.word	0
 
 bKeyCur:	.word	0				; (!) words
