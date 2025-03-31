@@ -315,7 +315,8 @@ PpuTimerInit:
 	clr	@#177710			; clear control, stop
 	clr	@#177712			; clear buffer
 	tst	@#177714			; read current value
-	bne	.-4				; wait until cleared
+	tst	@#177714			; read current value
+;	bne	.-4				; wait until cleared
 	return
 
 
